@@ -8,7 +8,7 @@ from shared import matrixops
 glfw.init()
 
 glfw.window_hint(glfw.VISIBLE, glfw.FALSE)
-window = glfw.create_window(800, 600, "Trabalho 1", None, None)
+window = glfw.create_window(960, 720, "Trabalho 1", None, None)
 glfw.make_context_current(window)
 
 def key_event(window,key,scancode,action,mods):
@@ -33,7 +33,7 @@ while not glfw.window_should_close(window):
     glClear(GL_COLOR_BUFFER_BIT)
     
     # definindo a cor da janela      
-    glClearColor(0, 0, 0, 1.0)
+    glClearColor(1.0, 1.0, 1.0, 1.0)
 
     # gerencia troca de dados entre janela e o OpenGL
     glfw.swap_buffers(window)
