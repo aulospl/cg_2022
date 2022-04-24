@@ -11,13 +11,17 @@ glfw.window_hint(glfw.VISIBLE, glfw.FALSE)
 window = glfw.create_window(960, 720, "Trabalho 1", None, None)
 glfw.make_context_current(window)
 
+
+f = True
 def key_event(window,key,scancode,action,mods):
-    print('[key event] key=',key)
-    print('[key event] scancode=',scancode)
-    print('[key event] action=',action)
-    print('[key event] mods=',mods)
-    print('-------')
-    
+    global f
+    if f and action == glfw.PRESS and key == glfw.KEY_RIGHT:
+        print("right")
+        f = False
+    elif (not f) and action == glfw.PRESS and key == glfw.KEY_LEFT:
+        print("left")
+        f = True
+
 glfw.set_key_callback(window,key_event)
 
 glfw.show_window(window)
