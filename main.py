@@ -118,7 +118,7 @@ if __name__ == "__main__":
         
         glDrawArrays(GL_TRIANGLE_STRIP, 0, len(tank))
         glDrawArrays(GL_TRIANGLE_FAN, len(tank), len(handle))
-        glDrawArrays(GL_TRIANGLE_STRIP, len(tank)+ len(handle), len(machine))
+        glDrawArrays(GL_TRIANGLE_FAN, len(tank) + len(handle), len(machine))
         glDrawArrays(GL_TRIANGLE_STRIP, len(tank)+ len(handle) + len(machine), len(tree))
 
         # gerencia troca de dados entre janela e o OpenGL
