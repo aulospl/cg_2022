@@ -40,19 +40,51 @@ def draw_circle_right(radius,position_x,position_y):
 
 
 
+f = True
+tx = 0
+ty = 0
+sx = 1
+sy = 1
+d = 0
+rf = True
 def key_event(window,key,scancode,action,mods):
-    print('[key event] key=',key)
-    print('[key event] scancode=',scancode)
-    print('[key event] action=',action)
-    print('[key event] mods=',mods)
-    print('-------')
+    global f, tx, sy, d, rf
+    if f and action == glfw.PRESS and key == glfw.KEY_RIGHT:
+        print("right")
+        f = False
+        tx  += 0.01
+        sy -= 0.005
+        if d == -45:
+            rf = True
+        elif d == 0:
+            rf = False
+        if rf:
+            d += 1
+        else:
+            d -= 1
+        print(d)
+    elif (not f) and action == glfw.PRESS and key == glfw.KEY_LEFT:
+        print("left")
+        f = True
+        sy -= 0.005
+        tx += 0.01
+        if d == -45:
+            rf = True
+        elif d == 0:
+            rf = False
+        if rf:
+            d += 1
+        else:
+            d -= 1
+        print(d)
     
 
 def shaders_config():
     vertex_code = """
             attribute vec2 position;
+            uniform mat4 mat;
             void main(){
-                gl_Position = vec4(position,0.0,1.0);
+                gl_Position = mat * vec4(position,0.0,1.0);
             }
             """
     fragment_code = """
@@ -132,7 +164,6 @@ if __name__ == "__main__":
     # B = 0.0
     
     
-    
     glfw.show_window(window)
 
     while not glfw.window_should_close(window):
@@ -140,7 +171,6 @@ if __name__ == "__main__":
     
         # funcao interna do glfw para gerenciar eventos de mouse, teclado, etc
         glfw.poll_events() 
-
         # limpa a cor de fundo da janela e preenche com outra no sistema RGBA
         glClear(GL_COLOR_BUFFER_BIT)
         
@@ -154,10 +184,23 @@ if __name__ == "__main__":
         glUniform4f(tank_color,0, 0, 0, 0)
         glDrawArrays(GL_TRIANGLE_STRIP, 0, len(tank))
         # water_tank draw
+        esc = np.array([            sx, 0.0, 0.0, 0.0, 
+                                    0.0, sy, 0.0, 0.0, 
+                                    0.0, 0.0, 1.0, 0.0, 
+                                    0.0, 0.0, 0.0, 1.0], np.float32)
+
+        water_scale = glGetUniformLocation(program, "mat")
+        glUniformMatrix4fv(water_scale, 1, GL_TRUE, esc)
         water_color = glGetUniformLocation(program, "color")
         glUniform4f(water_color,0, 0, 1, 0)
         glDrawArrays(GL_TRIANGLE_STRIP, len(tank), len(water))
         # handle draw
+        rot = np.array([            matrixops.cos(-d), -matrixops.sin(-d), 0.0, 0.0, 
+                                    matrixops.sin(-d), matrixops.cos(-d), 0.0, 0.0, 
+                                    0.0, 0.0, 1.0, 0.0, 
+                                    0.0, 0.0, 0.0, 1.0], np.float32)
+        handle_rot = glGetUniformLocation(program, "mat")
+        glUniformMatrix4fv(handle_rot, 1, GL_TRUE, rot)
         handle_color = glGetUniformLocation(program, "color")
         glUniform4f(handle_color,0, 0, 0, 0)
         glDrawArrays(GL_TRIANGLE_STRIP, len(tank) + len(water), len(handle))
@@ -168,6 +211,20 @@ if __name__ == "__main__":
         glUniform4f(piston_color,0.752941, 0.752941, 0.752941, 0)
         glDrawArrays(GL_TRIANGLE_FAN, len(tank)+ len(water)+ len(handle) + len(machine), len(piston))
         # tree draw
+        esc = np.array([            sx, 0.0, 0.0, 0.0, 
+                                    0.0, sy, 0.0, 0.0, 
+                                    0.0, 0.0, 1.0, 0.0, 
+                                    0.0, 0.0, 0.0, 1.0], np.float32)
+        
+        tretran = np.array([        1.0, 0.0, 0.0, 1.0, 
+                                    0.0, 1.0, 0.0, 1.0, 
+                                    0.0, 0.0, 1.0, 0.0, 
+                                    0.0, 0.0, 0.0, 1.0], np.float32)
+
+        #treemat = np.matmul(tretran, esc)
+        #tree_scale = glGetUniformLocation(program, "mat")
+        #glUniformMatrix4fv(tree_scale, 1, GL_TRUE, esc)
+
         tree_color = glGetUniformLocation(program, "color")
         glUniform4f(tree_color,0.65, 0.5, 0.26, 1.0)
         glDrawArrays(GL_TRIANGLE_STRIP, len(tank)+ len(water)+ len(handle) + len(machine) + len(piston), len(tree))
@@ -188,6 +245,16 @@ if __name__ == "__main__":
         glUniform4f(kirby_color,1, 0.43, 0.78, 0)
         glDrawArrays(GL_TRIANGLE_FAN,len(tank)+ len(water)+ len(handle) + len(machine) + len(tree) + len(piston) + len(tree_top) + len(pipe_tank) + len(pipe_tree),len(kirby))
         # KirbyArm_draw
+        
+        tra = np.array([            1.0, 0.0, 0.0, tx, 
+                                    0.0, 1.0, 0.0, ty, 
+                                    0.0, 0.0, 1.0, 0.0, 
+                                    0.0, 0.0, 0.0, 1.0], np.float32)
+
+      
+        kirby_arm_translattion = glGetUniformLocation(program, "mat")
+        glUniformMatrix4fv(kirby_arm_translattion, 1, GL_TRUE, tra)
+
         kirby_arm_color = glGetUniformLocation(program, "color")
         glUniform4f(kirby_arm_color,1, 0.43, 0.78, 0)
         glDrawArrays(GL_TRIANGLE_STRIP,len(tank)+ len(water)+ len(handle) + len(machine) + len(tree) + len(piston) + len(tree_top) + len(pipe_tank) + len(pipe_tree) + len(kirby),len(kirbyarm))
