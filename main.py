@@ -87,8 +87,9 @@ if __name__ == "__main__":
     tank = [(0, 0.25),(0, +0.75),(-0.25, 0.25),(-0.25, +0.75)]
     handle =  draw_circle(radius=0.2)
     machine = [(0.5, -0.5), (0.5, -0.2), (-0.15, -0.2), (-0.15, -0.5)]
+    piston = [(0.7, -0.1), (0.5, 0.2), (0.3, 0.2), (0.3, -0.1)]
     tree = [(0.8, -0.45),(0.8, -0.15),(0.55, -0.45),(0.55, -0.15)]
-    vertices = tank + handle + machine + tree # Concatenação de todos os vértices
+    vertices = tank + handle + machine + piston + tree # Concatenação de todos os vértices
     vertices = np.array(vertices,  dtype=np.float32)
     buffer = glGenBuffers(1)
     glBindBuffer(GL_ARRAY_BUFFER, buffer)
@@ -119,7 +120,8 @@ if __name__ == "__main__":
         glDrawArrays(GL_TRIANGLE_STRIP, 0, len(tank))
         glDrawArrays(GL_TRIANGLE_FAN, len(tank), len(handle))
         glDrawArrays(GL_TRIANGLE_FAN, len(tank) + len(handle), len(machine))
-        glDrawArrays(GL_TRIANGLE_STRIP, len(tank)+ len(handle) + len(machine), len(tree))
+        glDrawArrays(GL_TRIANGLE_FAN, len(tank) + len(handle) + len(machine), len(piston))
+        glDrawArrays(GL_TRIANGLE_STRIP, len(tank)+ len(handle) + len(machine) + len(piston), len(tree))
 
         # gerencia troca de dados entre janela e o OpenGL
         glfw.swap_buffers(window)
