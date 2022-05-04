@@ -43,6 +43,16 @@ iden = np.array([          1.0, 0.0, 0.0, 0.0,
                                     0.0, 0.0, 1.0, 0.0, 
                                     0.0, 0.0, 0.0, 1.0], np.float32)
 
+
+# f, flag de alternar botoes (seta direita e esquerda)
+# tx, ty, deslocamento do braço do kirby
+# sx, sy, escala da agua
+# tree_sy, escala da arvore
+# d, graus de rotação da alavanca
+# rf, flag de limitador de rotação da alavanca (ir e voltar ao rotacionar 45º)
+# c, contador de vezes que o botão foi apertado
+# signal, flag de sinal, atualmente não utilizado
+
 f = True
 tx = 0
 ty = 0
