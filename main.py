@@ -48,12 +48,13 @@ tx = 0
 ty = 0
 sx = 1
 sy = 1
+tree_sy = 1
 d = 0
 rf = True
 c = 0
 signal = False
 def key_event(window,key,scancode,action,mods):
-    global f, tx, sy, d, rf,c, signal
+    global f, tx, sy, d, rf,c, signal, tree_sy
   
     if c > 53:
         print("FIM!")
@@ -63,6 +64,7 @@ def key_event(window,key,scancode,action,mods):
         f = False
         c += 1
         sy -= 0.018518519
+        tree_sy += 0.018518519
         if d == -45:
             rf = True
         elif d == 0:
@@ -78,6 +80,7 @@ def key_event(window,key,scancode,action,mods):
         f = True
         c += 1
         sy -= 0.018518519
+        tree_sy += 0.018518519
         tx += 0.01
         if d == -45:
             rf = True
@@ -215,20 +218,25 @@ if __name__ == "__main__":
                                     0.0, 1.0, 0.0, 0.45, 
                                     0.0, 0.0, 1.0, 0.0, 
                                     0.0, 0.0, 0.0, 1.0], np.float32)
+        
+        hand_trans_reverse = np.array([     1.0, 0.0, 0.0, -0.35, 
+                                    0.0, 1.0, 0.0, -0.45, 
+                                    0.0, 0.0, 1.0, 0.0, 
+                                    0.0, 0.0, 0.0, 1.0], np.float32)
 
-        rot = np.array([            matrixops.cos(-d), -matrixops.sin(-d), 0.0, 0.0, 
-                                    matrixops.sin(-d), matrixops.cos(-d), 0.0, 0.0, 
+        rot = np.array([            matrixops.cos(-d), -matrixops.sin(-d), 0.0, d/300, 
+                                    matrixops.sin(-d), matrixops.cos(-d), 0.0, -d/250, 
                                     0.0, 0.0, 1.0, 0.0, 
                                     0.0, 0.0, 0.0, 1.0], np.float32)
         handle_rot = glGetUniformLocation(program, "mat")
         
-        if signal:
-            glUniformMatrix4fv(handle_rot, 1, GL_TRUE, iden)
-            glUniformMatrix4fv(handle_rot, 1, GL_TRUE, rot)
-            glUniformMatrix4fv(handle_rot, 1, GL_TRUE, iden)
-        else:
-            glUniformMatrix4fv(handle_rot, 1, GL_TRUE, rot)
-            pass
+        # transformation = np.multiply(rot,hand_trans_reverse)
+        # transformation = np.multiply(transformation,hand_trans)
+        # print(transformation)
+        
+        # transformation = np.matmul(transformation,hand_trans_reverse).reshape(4,4)
+        glUniformMatrix4fv(handle_rot, 1, GL_TRUE, rot)
+        
 
         handle_color = glGetUniformLocation(program, "color")
         glUniform4f(handle_color,0, 0, 0, 0)
@@ -246,24 +254,25 @@ if __name__ == "__main__":
         glUniform4f(piston_color,0.752941, 0.752941, 0.752941, 0)
         glDrawArrays(GL_TRIANGLE_FAN, len(tank)+ len(water)+ len(handle) + len(machine), len(piston))
         # tree draw
-        esc = np.array([            sx, 0.0, 0.0, 0.0, 
-                                    0.0, sy, 0.0, 0.0, 
+        esc = np.array([            1, 0.0, 0.0, 0.0, 
+                                    0.0, tree_sy, 0.0, 0 + tree_sy/10, 
                                     0.0, 0.0, 1.0, 0.0, 
                                     0.0, 0.0, 0.0, 1.0], np.float32)
         
-        tretran = np.array([        1.0, 0.0, 0.0, 1.0, 
-                                    0.0, 1.0, 0.0, 1.0, 
-                                    0.0, 0.0, 1.0, 0.0, 
-                                    0.0, 0.0, 0.0, 1.0], np.float32)
+        # tretran = np.array([        1.0, 0.0, 0.0, 1.0, 
+        #                             0.0, 1.0, 0.0, 1.0, 
+        #                             0.0, 0.0, 1.0, 0.0, 
+        #                             0.0, 0.0, 0.0, 1.0], np.float32)
 
         #treemat = np.matmul(tretran, esc)
-        #tree_scale = glGetUniformLocation(program, "mat")
-        #glUniformMatrix4fv(tree_scale, 1, GL_TRUE, esc)
+        tree_scale = glGetUniformLocation(program, "mat")
+        glUniformMatrix4fv(tree_scale, 1, GL_TRUE, esc)
 
         tree_color = glGetUniformLocation(program, "color")
         glUniform4f(tree_color,0.65, 0.5, 0.26, 1.0)
         glDrawArrays(GL_TRIANGLE_STRIP, len(tank)+ len(water)+ len(handle) + len(machine) + len(piston), len(tree))
         # tree top draw
+        glUniformMatrix4fv(tree_scale, 1, GL_TRUE, iden)
         tree_color = glGetUniformLocation(program, "color")
         glUniform4f(tree_color,0, 1, 0, 1.0)
         glDrawArrays(GL_TRIANGLE_FAN, len(tank)+ len(water)+ len(handle) + len(machine) + len(tree) + len(piston),len(tree_top))
