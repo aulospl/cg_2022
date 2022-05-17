@@ -53,7 +53,6 @@ iden = np.array([          1.0, 0.0, 0.0, 0.0,
 # c, contador de vezes que o botão foi apertado
 # signal, flag de sinal, atualmente não utilizado
 
-f = True
 tx = 0
 ty = 0
 sx = 1
@@ -69,9 +68,9 @@ def key_event(window,key,scancode,action,mods):
     if c > 53:
         print("FIM!")
         return 1
-    if f and action == glfw.PRESS and key == glfw.KEY_RIGHT:
+
+    elif action == glfw.PRESS and key == glfw.KEY_SPACE:
         signal = True
-        f = False
         c += 1
         sy -= 0.018518519
         tree_sy += 0.018518519
@@ -81,24 +80,7 @@ def key_event(window,key,scancode,action,mods):
             rf = False
         if rf:
             d += 5
-            tx  -= 0.02
-        else:
-            tx  += 0.01
-            d -= 5
-    elif (not f) and action == glfw.PRESS and key == glfw.KEY_LEFT:
-        signal = True
-        f = True
-        c += 1
-        sy -= 0.018518519
-        tree_sy += 0.018518519
-        tx += 0.01
-        if d == -45:
-            rf = True
-        elif d == 0:
-            rf = False
-        if rf:
-            d += 5
-            tx  -= 0.02
+            tx  -= 0.01
         else:
             d -= 5
             tx  += 0.01
