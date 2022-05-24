@@ -63,7 +63,7 @@ rf = True
 c = 0
 signal = False
 def key_event(window,key,scancode,action,mods):
-    global tx, sy, d, rf,c, signal, tree_sy
+    global tx, sy, ty, d, rf,c, signal, tree_sy
   
     if c > 53:
         print("FIM!")
@@ -74,7 +74,7 @@ def key_event(window,key,scancode,action,mods):
         c += 1
         sy -= 0.018518519
         tree_sy += 0.018518519
-       # ty  += 0.01
+        ty  += 0.018518519
         if d == -45:
             rf = True
         elif d == 0:
@@ -125,7 +125,7 @@ def shaders_config():
 
         glLinkProgram(prog)
         if not glGetProgramiv(prog, GL_LINK_STATUS):
-            print(glGetProgramInfoLog(program))
+            print(glGetProgramInfoLog(prog))
             raise RuntimeError('Linking error')
 
     return programs
@@ -191,7 +191,7 @@ if __name__ == "__main__":
 
         
 
-        signal = False
+       
         # funcao interna do glfw para gerenciar eventos de mouse, teclado, etc
         glfw.poll_events() 
         # limpa a cor de fundo da janela e preenche com outra no sistema RGBA
@@ -208,7 +208,7 @@ if __name__ == "__main__":
         glDrawArrays(GL_TRIANGLE_STRIP, 0, len(tank))
         # water_tank draw
         esc = np.array([            sx, 0.0, 0.0, 0.0, 
-                                    0.0, sy, 0.0, 0.0, 
+                                    0.0, sy, 0.0, ty/4, 
                                     0.0, 0.0, 1.0, 0.0, 
                                     0.0, 0.0, 0.0, 1.0], np.float32)
         
@@ -264,7 +264,7 @@ if __name__ == "__main__":
         glDrawArrays(GL_TRIANGLE_FAN, len(tank)+ len(water)+ len(handle) + len(machine), len(piston))
         # tree draw
         esc = np.array([            1, 0.0, 0.0, 0.0, 
-                                    0.0, tree_sy, 0.0, 0 + tree_sy/10, 
+                                    0.0, tree_sy, 0.0, ty/3, 
                                     0.0, 0.0, 1.0, 0.0, 
                                     0.0, 0.0, 0.0, 1.0], np.float32)
         
@@ -281,6 +281,8 @@ if __name__ == "__main__":
         glUniform4f(tree_color,0.65, 0.5, 0.26, 1.0)
         glDrawArrays(GL_TRIANGLE_STRIP, len(tank)+ len(water)+ len(handle) + len(machine) + len(piston), len(tree))
         # tree top draw
+        
+
         glUniformMatrix4fv(tree_scale, 1, GL_TRUE, iden)
         tree_color = glGetUniformLocation(programs[5], "color")
         glUniform4f(tree_color,0, 1, 0, 1.0)
@@ -302,7 +304,7 @@ if __name__ == "__main__":
         # KirbyArm_draw
         
         tra = np.array([            1.0, 0.0, 0.0, tx, 
-                                    0.0, 1.0, 0.0, ty, 
+                                    0.0, 1.0, 0.0, 0.0, 
                                     0.0, 0.0, 1.0, 0.0, 
                                     0.0, 0.0, 0.0, 1.0], np.float32)
 
