@@ -74,7 +74,7 @@ def key_event(window,key,scancode,action,mods):
         c += 1
         sy -= 0.018518519
         tree_sy += 0.018518519
-        ty  += 0.018518519
+        ty  += 0.00555556
         if d == -45:
             rf = True
         elif d == 0:
@@ -208,14 +208,21 @@ if __name__ == "__main__":
         glDrawArrays(GL_TRIANGLE_STRIP, 0, len(tank))
         # water_tank draw
         esc = np.array([            sx, 0.0, 0.0, 0.0, 
-                                    0.0, sy, 0.0, ty/4, 
+                                    0.0, sy, 0.0, 0.0, 
                                     0.0, 0.0, 1.0, 0.0, 
                                     0.0, 0.0, 0.0, 1.0], np.float32)
         
-      
+        tr = np.array([            1, 0.0, 0.0, 0.0, 
+                                    0.0, 1, 0.0, ty, 
+                                    0.0, 0.0, 1.0, 0.0, 
+                                    0.0, 0.0, 0.0, 1.0], np.float32)
 
+        mt = np.matmul(esc, tr)
+        
         water_scale = glGetUniformLocation(programs[1], "mat")
-        glUniformMatrix4fv(water_scale, 1, GL_TRUE, esc)
+        glUniformMatrix4fv(water_scale, 1, GL_TRUE, mt)
+        
+        
         water_color = glGetUniformLocation(programs[1], "color")
         glUniform4f(water_color,0, 0, 1, 0)
         glDrawArrays(GL_TRIANGLE_STRIP, len(tank), len(water))
