@@ -149,7 +149,7 @@ for face in modelo['faces']:
         textures_coord_list.append( modelo['texture'][texture_id-1] )
 print('Processando modelo terreno.obj. Vertice final:',len(vertices_list))
 
-load_texture_from_file(1,'terreno/pedra.jpg')
+load_texture_from_file(0,'terreno/pedra.jpg')
 
 buffer = glGenBuffers(2)
 
@@ -196,11 +196,11 @@ def desenha_terreno():
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
        
     #define id da textura do modelo
-    glBindTexture(GL_TEXTURE_2D, 1)
+    glBindTexture(GL_TEXTURE_2D, 0)
     
     
     # desenha o modelo
-    glDrawArrays(GL_TRIANGLES, 36, 42-36) ## renderizando
+    glDrawArrays(GL_TRIANGLES, 0, 6) ## renderizando
 
 cameraPos   = glm.vec3(0.0,  0.0,  1.0);
 cameraFront = glm.vec3(0.0,  0.0, -1.0);
