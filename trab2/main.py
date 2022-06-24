@@ -149,7 +149,7 @@ for face in modelo['faces']:
         textures_coord_list.append( modelo['texture'][texture_id-1] )
 print('Processando modelo terreno.obj. Vertice final:',len(vertices_list))
 
-load_texture_from_file(0,'terreno/pedra.jpg')
+load_texture_from_file(0,'terreno/grama.jpg')
 
 buffer = glGenBuffers(2)
 
