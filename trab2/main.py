@@ -152,7 +152,7 @@ print('Processando modelo terreno.obj. Vertice final:',len(vertices_list))
 load_texture_from_file(0,'terreno/grama.jpg')
 
 # Sol
-modelo = load_model_from_file('ceu/esfera.obj')
+modelo = load_model_from_file('ceu/sphere1.obj')
 
 ### inserindo vertices do modelo no vetor de vertices
 print('Processando modelo sunobj.obj. Vertice inicial:',len(vertices_list))
@@ -255,7 +255,7 @@ def desenha_sol():
     
     
     # desenha o modelo
-    glDrawArrays(GL_TRIANGLES, 6, 1990-6) ## renderizando
+    glDrawArrays(GL_TRIANGLES, 6, 2886-6) ## renderizando
 
 """def desenha_dude():
     # aplica a matriz model
@@ -306,7 +306,7 @@ def desenha_dude(rotacao_inc):
     
     
     # desenha o modelo
-    glDrawArrays(GL_TRIANGLES, 1990, 8236-1990) ## renderizando
+    glDrawArrays(GL_TRIANGLES, 2886, 8236-1990) ## renderizando
 
 cameraPos   = glm.vec3(0.0,  0.0,  1.0);
 cameraFront = glm.vec3(0.0,  0.0, -1.0);
@@ -436,7 +436,7 @@ while not glfw.window_should_close(window):
     
 
     desenha_terreno()
-    #desenha_sol()
+    desenha_sol()
     desenha_dude(rotacao_inc)
     
     mat_view = view()
