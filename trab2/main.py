@@ -152,24 +152,40 @@ print('Processando modelo terreno.obj. Vertice final:',len(vertices_list))
 load_texture_from_file(0,'terreno/grama.jpg')
 
 # Sol
-modelo = load_model_from_file('ceu/sol.obj')
+modelo = load_model_from_file('ceu/esfera.obj')
 
 ### inserindo vertices do modelo no vetor de vertices
-print('Processando modelo terreno.obj. Vertice inicial:',len(vertices_list))
+print('Processando modelo sunobj.obj. Vertice inicial:',len(vertices_list))
 for face in modelo['faces']:
     for vertice_id in face[0]:
         vertices_list.append( modelo['vertices'][vertice_id-1] )
     for texture_id in face[1]:
         textures_coord_list.append( modelo['texture'][texture_id-1] )
-print('Processando modelo terreno.obj. Vertice final:',len(vertices_list))
+print('Processando modelo sunobj.obj. Vertice final:',len(vertices_list))
+
 
 load_texture_from_file(1,'ceu/sol.jpg')
 
 
+# Dude
+modelo = load_model_from_file('person/cat.obj')
+
+### inserindo vertices do modelo no vetor de vertices
+print('Processando modelo dude.obj. Vertice inicial:',len(vertices_list))
+for face in modelo['faces']:
+    for vertice_id in face[0]:
+        vertices_list.append( modelo['vertices'][vertice_id-1] )
+    for texture_id in face[1]:
+        textures_coord_list.append( modelo['texture'][texture_id-1] )
+print('Processando modelo dude.obj. Vertice final:',len(vertices_list))
+
 buffer = glGenBuffers(2)
+
 
 vertices = np.zeros(len(vertices_list), [("position", np.float32, 3)])
 vertices['position'] = vertices_list
+
+load_texture_from_file(2,'person/monstro.jpg')
 
 # Upload data
 glBindBuffer(GL_ARRAY_BUFFER, buffer[0])
@@ -225,7 +241,58 @@ def desenha_sol():
     r_x = 0.0; r_y = 0.0; r_z = 1.0;
     
     # translacao
-    t_x = 0.0; t_y = 1.01; t_z = 1.0;
+    t_x = 0.0; t_y = 1.0; t_z = 1.0;
+    
+    # escala
+    s_x = 1.0; s_y = 1.0; s_z = 1.0;
+    
+    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+    loc_model = glGetUniformLocation(program, "model")
+    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+       
+    #define id da textura do modelo
+    glBindTexture(GL_TEXTURE_2D, 1)
+    
+    
+    # desenha o modelo
+    glDrawArrays(GL_TRIANGLES, 6, 1990-6) ## renderizando
+
+"""def desenha_dude():
+    # aplica a matriz model
+    
+    # rotacao
+    angle = 0.0;
+    r_x = 0.0; r_y = 0.0; r_z = 1.0;
+    
+    # translacao
+    t_x = 0.0; t_y = 1.0; t_z = 1.0;
+    
+    # escala
+    s_x = 1.0; s_y = 1.0; s_z = 1.0;
+    
+    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+    loc_model = glGetUniformLocation(program, "model")
+    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+       
+    #define id da textura do modelo
+    glBindTexture(GL_TEXTURE_2D, 1)
+    
+    
+    # desenha o modelo
+    glDrawArrays(GL_TRIANGLES, 1990, 61216-1990) ## renderizando"""
+
+
+def desenha_dude(rotacao_inc):
+    
+    
+    # aplica a matriz model
+    
+    # rotacao
+    angle = rotacao_inc;
+    r_x = 0.0; r_y = 1.0; r_z = 0.0;
+    
+    # translacao
+    t_x = 0.0; t_y = -1.0; t_z = 0.0;
     
     # escala
     s_x = 0.001; s_y = 0.001; s_z = 0.001;
@@ -239,7 +306,7 @@ def desenha_sol():
     
     
     # desenha o modelo
-    glDrawArrays(GL_TRIANGLES, 6, 31750-6) ## renderizando
+    glDrawArrays(GL_TRIANGLES, 1990, 8236-1990) ## renderizando
 
 cameraPos   = glm.vec3(0.0,  0.0,  1.0);
 cameraFront = glm.vec3(0.0,  0.0, -1.0);
@@ -369,8 +436,8 @@ while not glfw.window_should_close(window):
     
 
     desenha_terreno()
-    desenha_sol()
-
+    #desenha_sol()
+    desenha_dude(rotacao_inc)
     
     mat_view = view()
     loc_view = glGetUniformLocation(program, "view")
