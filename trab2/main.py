@@ -315,20 +315,26 @@ cameraUp    = glm.vec3(0.0,  1.0,  0.0);
 
 polygonal_mode = False
 
+def check_boundary(position):
+    if (position[0] < -20 or position[0] > 20) or (position[1] < 0 or position[0] > 20) or (position[2] < -20 or position[2] > 20):
+        return False
+    else:
+        return True
+
 def key_event(window,key,scancode,action,mods):
     global cameraPos, cameraFront, cameraUp, polygonal_mode
     
     cameraSpeed = 0.2
-    if key == 87 and (action==1 or action==2): # tecla W
+    if key == 87 and (action==1 or action==2) and check_boundary(cameraPos + (cameraSpeed * cameraFront)): # tecla W
         cameraPos += cameraSpeed * cameraFront
     
-    if key == 83 and (action==1 or action==2): # tecla S
+    if key == 83 and (action==1 or action==2) and check_boundary(cameraPos - (cameraSpeed * cameraFront)): # tecla S
         cameraPos -= cameraSpeed * cameraFront
     
-    if key == 65 and (action==1 or action==2): # tecla A
+    if key == 65 and (action==1 or action==2) and check_boundary(cameraPos - (glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed)): # tecla A
         cameraPos -= glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
         
-    if key == 68 and (action==1 or action==2): # tecla D
+    if key == 68 and (action==1 or action==2) and check_boundary(cameraPos + (glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed)): # tecla D
         cameraPos += glm.normalize(glm.cross(cameraFront, cameraUp)) * cameraSpeed
         
     if key == 80 and action==1 and polygonal_mode==True:
@@ -337,8 +343,10 @@ def key_event(window,key,scancode,action,mods):
         if key == 80 and action==1 and polygonal_mode==False:
             polygonal_mode=True
         
-        
-        
+    
+    print(cameraPos)
+   
+
 firstMouse = True
 yaw = -90.0 
 pitch = 0.0
