@@ -193,7 +193,7 @@ for face in modelo['faces']:
 print('Processando modelo casa.obj. Vertice final:',len(vertices_list))
 
 # Arvore
-load_texture_from_file(4,'tree/Leaves0156_1_S.png')
+load_texture_from_file(4,'tree/BarkDecidious0194_7_S.jpg')
 modelo = load_model_from_file('tree/Lowpoly_tree_sample.obj')
 
 ### inserindo vertices do modelo no vetor de vertices
@@ -233,7 +233,7 @@ print('Processando modelo luz.obj. Vertice final:',len(vertices_list))
 
 
 load_texture_from_file(6,'ceu/discoBall.jpeg')
-
+# Rua
 modelo = load_model_from_file('terreno/terreno2.obj')
 
 ### inserindo vertices do modelo no vetor de vertices
@@ -247,6 +247,76 @@ print('Processando modelo terreno.obj. Vertice final:',len(vertices_list))
 
 load_texture_from_file(7,'terreno/pedra.jpg')
 
+# skybox-top
+modelo = load_model_from_file('terreno/terreno2.obj')
+
+### inserindo vertices do modelo no vetor de vertices
+print('Processando modelo topo.obj. Vertice inicial:',len(vertices_list))
+for face in modelo['faces']:
+    for vertice_id in face[0]:
+        vertices_list.append( modelo['vertices'][vertice_id-1] )
+    for texture_id in face[1]:
+        textures_coord_list.append( modelo['texture'][texture_id-1] )
+print('Processando modelo topo.obj. Vertice final:',len(vertices_list))
+
+load_texture_from_file(8,'skybox/ceu.jpeg')
+
+
+# skybox-direita
+modelo = load_model_from_file('terreno/terreno2.obj')
+
+### inserindo vertices do modelo no vetor de vertices
+print('Processando modelo direita.obj. Vertice inicial:',len(vertices_list))
+for face in modelo['faces']:
+    for vertice_id in face[0]:
+        vertices_list.append( modelo['vertices'][vertice_id-1] )
+    for texture_id in face[1]:
+        textures_coord_list.append( modelo['texture'][texture_id-1] )
+print('Processando modelo direita.obj. Vertice final:',len(vertices_list))
+
+load_texture_from_file(9,'skybox/ceu.jpeg')
+
+# skybox-esquerd
+modelo = load_model_from_file('terreno/terreno2.obj')
+
+### inserindo vertices do modelo no vetor de vertices
+print('Processando modelo esquerd.obj. Vertice inicial:',len(vertices_list))
+for face in modelo['faces']:
+    for vertice_id in face[0]:
+        vertices_list.append( modelo['vertices'][vertice_id-1] )
+    for texture_id in face[1]:
+        textures_coord_list.append( modelo['texture'][texture_id-1] )
+print('Processando modelo esquerd.obj. Vertice final:',len(vertices_list))
+
+load_texture_from_file(9,'skybox/ceu.jpeg')
+
+# skybox-atras
+modelo = load_model_from_file('terreno/terreno2.obj')
+
+### inserindo vertices do modelo no vetor de vertices
+print('Processando modelo atras.obj. Vertice inicial:',len(vertices_list))
+for face in modelo['faces']:
+    for vertice_id in face[0]:
+        vertices_list.append( modelo['vertices'][vertice_id-1] )
+    for texture_id in face[1]:
+        textures_coord_list.append( modelo['texture'][texture_id-1] )
+print('Processando modelo atras.obj. Vertice final:',len(vertices_list))
+
+load_texture_from_file(9,'skybox/ceu.jpeg')
+
+# skybox-frente
+modelo = load_model_from_file('terreno/terreno2.obj')
+
+### inserindo vertices do modelo no vetor de vertices
+print('Processando modelo frente.obj. Vertice inicial:',len(vertices_list))
+for face in modelo['faces']:
+    for vertice_id in face[0]:
+        vertices_list.append( modelo['vertices'][vertice_id-1] )
+    for texture_id in face[1]:
+        textures_coord_list.append( modelo['texture'][texture_id-1] )
+print('Processando modelo frente.obj. Vertice final:',len(vertices_list))
+
+load_texture_from_file(9,'skybox/ceu.jpeg')
 
 buffer = glGenBuffers(2)
 
@@ -310,7 +380,7 @@ def desenha_sol():
     r_x = 0.0; r_y = 0.0; r_z = 1.0;
     
     # translacao
-    t_x = 0.0; t_y = 4.0; t_z = 4.0;
+    t_x = 0.0; t_y = 15.0; t_z = 15.0;
     
     # escala
     s_x = 2.0; s_y = 2.0; s_z = 2.0;
@@ -399,7 +469,7 @@ def desenha_tree():
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
        
     #define id da textura do modelo
-    glBindTexture(GL_TEXTURE_2D, 1)
+    glBindTexture(GL_TEXTURE_2D, 4)
     
     
     # desenha o modelo
@@ -479,6 +549,125 @@ def desenha_rua():
     
     # desenha o modelo
     glDrawArrays(GL_TRIANGLES,18960, 18966 - 18960) ## renderizando
+
+def desenha_ceu_topo():
+    # aplica a matriz model
+    
+    # rotacao
+    angle = 0.0;
+    r_x = 0.0; r_y = 0.0; r_z = 1.0;
+    
+    # translacao
+    t_x = 0.0; t_y = 19.0; t_z = 0.0;
+    
+    # escala
+    s_x = 20.0; s_y = 20.0; s_z = 20.0;
+    
+    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+    loc_model = glGetUniformLocation(program, "model")
+    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+       
+    #define id da textura do modelo
+    glBindTexture(GL_TEXTURE_2D, 8)
+    
+    glDrawArrays(GL_TRIANGLES,18966, 18972 - 18966) ## renderizando
+    
+    
+def desenha_ceu_direita(rotacao_inc):
+    # aplica a matriz model
+    
+    # rotacao
+    angle = 90;
+    r_x = 0.0; r_y = 0.0; r_z = 1.0;
+    
+    # translacao
+    t_x = 20.0; t_y = -1.0; t_z = 0.0;
+    
+    # escala
+    s_x = 20.0; s_y = 21.0; s_z = 20.0;
+    
+    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+    loc_model = glGetUniformLocation(program, "model")
+    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+       
+    #define id da textura do modelo
+    glBindTexture(GL_TEXTURE_2D, 9)
+    
+    
+    # desenha o modelo
+    glDrawArrays(GL_TRIANGLES,18972, 18978 - 18972) ## renderizando
+
+def desenha_ceu_esquerda(rotacao_inc):
+    # aplica a matriz model
+    
+    # rotacao
+    angle = 90;
+    r_x = 0.0; r_y = 0.0; r_z = 1.0;
+    
+    # translacao
+    t_x = -20.0; t_y = -1.0; t_z = 0.0;
+    
+    # escala
+    s_x = 20.0; s_y = 21.0; s_z = 20.0;
+    
+    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+    loc_model = glGetUniformLocation(program, "model")
+    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+       
+    #define id da textura do modelo
+    glBindTexture(GL_TEXTURE_2D, 9)
+    
+    
+    # desenha o modelo
+    glDrawArrays(GL_TRIANGLES,18978, 18984-18978) ## renderizando
+
+def desenha_ceu_atras(rotacao_inc):
+    # aplica a matriz model
+    
+    # rotacao
+    angle = 90;
+    r_x = 1.0; r_y = 0.0; r_z = 0.0;
+    
+    # translacao
+    t_x = 0.0; t_y = -1.0; t_z = -20.0;
+    
+    # escala
+    s_x = 20.0; s_y = 21.0; s_z = 20.0;
+    
+    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+    loc_model = glGetUniformLocation(program, "model")
+    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+       
+    #define id da textura do modelo
+    glBindTexture(GL_TEXTURE_2D, 9)
+    
+    
+    # desenha o modelo
+    glDrawArrays(GL_TRIANGLES,18984, 18990-18984) ## renderizando
+
+def desenha_ceu_frente(rotacao_inc):
+    # aplica a matriz model
+    
+    # rotacao
+    angle = 90;
+    r_x = 1.0; r_y = 0.0; r_z = 0.0;
+    
+    # translacao
+    t_x = 0.0; t_y = -1.0; t_z = 20.0;
+    
+    # escala
+    s_x = 20.0; s_y = 21.0; s_z = 20.0;
+    
+    mat_model = model(angle, r_x, r_y, r_z, t_x, t_y, t_z, s_x, s_y, s_z)
+    loc_model = glGetUniformLocation(program, "model")
+    glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
+       
+    #define id da textura do modelo
+    glBindTexture(GL_TEXTURE_2D, 9)
+    
+    
+    # desenha o modelo
+    glDrawArrays(GL_TRIANGLES,18990, 18996-18990) ## renderizando
 
 cameraPos   = glm.vec3(0.0,  0.0,  1.0);
 cameraFront = glm.vec3(0.0,  0.0, -1.0);
@@ -615,6 +804,11 @@ while not glfw.window_should_close(window):
     desenha_mesa()
     desenha_luz()
     desenha_rua()
+    desenha_ceu_topo()
+    desenha_ceu_direita(rotacao_inc)
+    desenha_ceu_esquerda(rotacao_inc)
+    desenha_ceu_atras(rotacao_inc)
+    desenha_ceu_frente(rotacao_inc)
     
     
     mat_view = view()
