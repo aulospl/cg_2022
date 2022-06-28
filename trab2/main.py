@@ -14,30 +14,10 @@ window = glfw.create_window(largura, altura, "Trabalho 2", None, None)
 glfw.make_context_current(window)
 
 
-#vertex_code = """
-#        attribute vec3 position;
-#        attribute vec2 texture_coord;
-#        varying vec2 out_texture;
-#                
-#        uniform mat4 model;
-#        uniform mat4 view;
-#        uniform mat4 projection;        
-#        
-#        void main(){
-#            gl_Position = projection * view * model * vec4(position,1.0);
-#            out_texture = vec2(texture_coord);
-#        }
-#        """
-
 vertex_code = """
         attribute vec3 position;
         attribute vec2 texture_coord;
-        attribute vec3 normals;
-        
-       
         varying vec2 out_texture;
-        varying vec3 out_fragPos;
-        varying vec3 out_normal;
                 
         uniform mat4 model;
         uniform mat4 view;
@@ -46,40 +26,19 @@ vertex_code = """
         void main(){
             gl_Position = projection * view * model * vec4(position,1.0);
             out_texture = vec2(texture_coord);
-            out_fragPos = vec3(position);
-            out_normal = normals;
         }
         """
 
 fragment_code = """
-
-        uniform vec3 lightPos; // define coordenadas de posicao da luz
-        uniform float ka; // coeficiente de reflexao ambiente
-        uniform float kd; // coeficiente de reflexao difusa
-        
-        vec3 lightColor = vec3(1.0, 1.0, 1.0);
-        
-
-        varying vec2 out_texture; // recebido do vertex shader
-        varying vec3 out_normal; // recebido do vertex shader
-        varying vec3 out_fragPos; // recebido do vertex shader
+        uniform vec4 color;
+        varying vec2 out_texture;
         uniform sampler2D samplerTexture;
         
-        
-        
         void main(){
-            vec3 ambient = ka * lightColor;             
-        
-            vec3 norm = normalize(out_normal); // normaliza vetores perpendiculares
-            vec3 lightDir = normalize(lightPos - out_fragPos); // direcao da luz
-            float diff = max(dot(norm, lightDir), 0.0); // verifica limite angular (entre 0 e 90)
-            vec3 diffuse = kd * diff * lightColor; // iluminacao difusa
-            
             vec4 texture = texture2D(samplerTexture, out_texture);
-            vec4 result = vec4((ambient + diffuse),1.0) * texture; // aplica iluminacao
-            gl_FragColor = result;
-
-        }"""
+            gl_FragColor = texture;
+        }
+        """
 
 program  = glCreateProgram()
 vertex   = glCreateShader(GL_VERTEX_SHADER)
@@ -115,12 +74,10 @@ def load_model_from_file(filename):
     """Loads a Wavefront OBJ file. """
     objects = {}
     vertices = []
-    normals = []
     texture_coords = []
     faces = []
 
     material = None
-
     # abre o arquivo obj para leitura
     for line in open(filename, "r"): ## para cada linha do arquivo .obj
         if line.startswith('#'): continue ## ignora comentarios
@@ -132,9 +89,6 @@ def load_model_from_file(filename):
         if values[0] == 'v':
             vertices.append(values[1:4])
 
-        ### recuperando vertices
-        if values[0] == 'vn':
-            normals.append(values[1:4])
 
         ### recuperando coordenadas de textura
         elif values[0] == 'vt':
@@ -146,23 +100,20 @@ def load_model_from_file(filename):
         elif values[0] == 'f':
             face = []
             face_texture = []
-            face_normals = []
             for v in values[1:]:
                 w = v.split('/')
                 face.append(int(w[0]))
-                face_normals.append(int(w[2]))
                 if len(w) >= 2 and len(w[1]) > 0:
                     face_texture.append(int(w[1]))
                 else:
                     face_texture.append(0)
 
-            faces.append((face, face_texture, face_normals, material))
+            faces.append((face, face_texture, material))
 
     model = {}
     model['vertices'] = vertices
     model['texture'] = texture_coords
     model['faces'] = faces
-    model['normals'] = normals
 
     return model
 
@@ -183,14 +134,11 @@ def load_texture_from_file(texture_id, img_textura):
     #image_data = np.array(list(img.getdata()), np.uint8)
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, img_width, img_height, 0, GL_RGB, GL_UNSIGNED_BYTE, image_data)
 
-vertices_list = []  
-normals_list = []      
+vertices_list = []    
 textures_coord_list = []
 
 # Carregar modelos e aplicar texturas
 modelo = load_model_from_file('terreno/terreno2.obj')
-
-print(modelo['normals'])
 
 ### inserindo vertices do modelo no vetor de vertices
 print('Processando modelo terreno.obj. Vertice inicial:',len(vertices_list))
@@ -199,8 +147,6 @@ for face in modelo['faces']:
         vertices_list.append( modelo['vertices'][vertice_id-1] )
     for texture_id in face[1]:
         textures_coord_list.append( modelo['texture'][texture_id-1] )
-    for normal_id in face[2]:
-        normals_list.append( modelo['normals'][normal_id-1] )
 print('Processando modelo terreno.obj. Vertice final:',len(vertices_list))
 
 load_texture_from_file(0,'terreno/grama.jpg')
@@ -215,8 +161,6 @@ for face in modelo['faces']:
         vertices_list.append( modelo['vertices'][vertice_id-1] )
     for texture_id in face[1]:
         textures_coord_list.append( modelo['texture'][texture_id-1] )
-    for normal_id in face[2]:
-        normals_list.append( modelo['normals'][normal_id-1] )
 print('Processando modelo sunobj.obj. Vertice final:',len(vertices_list))
 
 
@@ -233,8 +177,6 @@ for face in modelo['faces']:
         vertices_list.append( modelo['vertices'][vertice_id-1] )
     for texture_id in face[1]:
         textures_coord_list.append( modelo['texture'][texture_id-1] )
-    for normal_id in face[2]:
-        normals_list.append( modelo['normals'][normal_id-1] )
 print('Processando modelo dude.obj. Vertice final:',len(vertices_list))
 
 #Casa
@@ -406,24 +348,6 @@ loc_texture_coord = glGetAttribLocation(program, "texture_coord")
 glEnableVertexAttribArray(loc_texture_coord)
 glVertexAttribPointer(loc_texture_coord, 2, GL_FLOAT, False, stride, offset)
 
-
-normals = np.zeros(len(normals_list), [("position", np.float32, 3)]) # três coordenadas
-normals['position'] = normals_list
-
-
-glBindBuffer(GL_ARRAY_BUFFER, buffer[2])
-glBufferData(GL_ARRAY_BUFFER, normals.nbytes, normals, GL_STATIC_DRAW)
-stride = normals.strides[0]
-offset = ctypes.c_void_p(0)
-loc_normals_coord = glGetAttribLocation(program, "normals")
-glEnableVertexAttribArray(loc_normals_coord)
-glVertexAttribPointer(loc_normals_coord, 3, GL_FLOAT, False, stride, offset)
-
-#loc_light_pos = glGetUniformLocation(program, "lightPos") # recuperando localizacao da variavel lightPos na GPU
-#glUniform3f(loc_light_pos, 0.0, 10.0, 0.0) ### posicao da fonte de luz
-
-ka = 0.5
-kd = 0.5
 def desenha_terreno():
     # aplica a matriz model
     
@@ -441,18 +365,6 @@ def desenha_terreno():
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
        
-
-    
-    #### define parametros de ilumincao do modelo
-    ka = ka # coeficiente de reflexao ambiente do modelo
-    kd = kd # coeficiente de reflexao difusa do modelo
-    
-    loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
-    glUniform1f(loc_ka, ka) ### envia ka pra gpu
-    
-    loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
-    glUniform1f(loc_kd, kd) ### envia kd pra gpu    
-    
     #define id da textura do modelo
     glBindTexture(GL_TEXTURE_2D, 0)
     
@@ -477,17 +389,6 @@ def desenha_sol():
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
        
-
-     # iluminação ambiente
-    ka = ka # coeficiente de reflexao ambiente do modelo
-    kd = kd # coeficiente de reflexao difusa do modelo
-    
-    loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
-    glUniform1f(loc_ka, ka) ### envia ka pra gpu
-    
-    loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
-    glUniform1f(loc_kd, kd) ### envia kd pra gpu    
-    
     #define id da textura do modelo
     glBindTexture(GL_TEXTURE_2D, 1)
     
@@ -515,16 +416,6 @@ def desenha_dude(incoming_z):
     loc_model = glGetUniformLocation(program, "model")
     glUniformMatrix4fv(loc_model, 1, GL_TRUE, mat_model)
        
-
-    ka = ka # coeficiente de reflexao ambiente do modelo
-    kd = kd # coeficiente de reflexao difusa do modelo
-    
-    loc_ka = glGetUniformLocation(program, "ka") # recuperando localizacao da variavel ka na GPU
-    glUniform1f(loc_ka, ka) ### envia ka pra gpu
-    
-    loc_kd = glGetUniformLocation(program, "kd") # recuperando localizacao da variavel ka na GPU
-    glUniform1f(loc_kd, kd) ### envia kd pra gpu    
-
     #define id da textura do modelo
     glBindTexture(GL_TEXTURE_2D, 1)
     
@@ -905,7 +796,7 @@ while not glfw.window_should_close(window):
     
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT)
     
-    glClearColor(0.2, 0.2, 0.2, 1.0)
+    glClearColor(1.0, 1.0, 1.0, 1.0)
     
     if polygonal_mode==True:
         glPolygonMode(GL_FRONT_AND_BACK,GL_LINE)
@@ -924,8 +815,7 @@ while not glfw.window_should_close(window):
         incoming_z += 0.01
     elif mov_flag == True:
         incoming_z -= 0.01
-    #else:
-    #    incoming_z -= 0.005
+   
 
     desenha_terreno()
     desenha_sol()
