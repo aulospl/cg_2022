@@ -372,7 +372,7 @@ def desenha_terreno():
     # desenha o modelo
     glDrawArrays(GL_TRIANGLES, 0, 6) ## renderizando
 
-def desenha_sol():
+def desenha_sol(inc_x):
     # aplica a matriz model
     
     # rotacao
@@ -380,7 +380,7 @@ def desenha_sol():
     r_x = 0.0; r_y = 0.0; r_z = 1.0;
     
     # translacao
-    t_x = 0.0; t_y = 15.0; t_z = 15.0;
+    t_x = inc_x; t_y = 15.0; t_z = 15.0;
     
     # escala
     s_x = 2.0; s_y = 2.0; s_z = 2.0;
@@ -788,6 +788,8 @@ glEnable(GL_DEPTH_TEST) ### importante para 3D
 
 rotacao_inc = 0
 incoming_z = 3.15
+inc_x = 0.0
+sol_flag = False
 mov_flag = False
 while not glfw.window_should_close(window):
 
@@ -810,15 +812,24 @@ while not glfw.window_should_close(window):
     elif incoming_z >= 3.15:
         mov_flag = True
 
+    if inc_x <= -15.0:
+        sol_flag = False
+    elif inc_x >= 15.0:
+        sol_flag = True
+
 
     if mov_flag == False:
-        incoming_z += 0.01
+        incoming_z += 0.065
     elif mov_flag == True:
-        incoming_z -= 0.01
+        incoming_z -= 0.065
    
+    if sol_flag == False:
+        inc_x += 0.05
+    elif sol_flag == True:
+        inc_x -= 0.05
 
     desenha_terreno()
-    desenha_sol()
+    desenha_sol(inc_x)
     desenha_dude(incoming_z)
     desenha_casa()
     desenha_tree()
