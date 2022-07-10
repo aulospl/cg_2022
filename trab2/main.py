@@ -675,6 +675,7 @@ cameraUp    = glm.vec3(0.0,  1.0,  0.0);
 
 
 polygonal_mode = False
+catFlag = False
 
 def check_boundary(position):
     if (position[0] < -20 or position[0] > 20) or (position[1] < 0 or position[0] > 20) or (position[2] < -20 or position[2] > 20):
@@ -683,7 +684,7 @@ def check_boundary(position):
         return True
 
 def key_event(window,key,scancode,action,mods):
-    global cameraPos, cameraFront, cameraUp, polygonal_mode
+    global cameraPos, cameraFront, cameraUp, polygonal_mode, catFlag
     
     cameraSpeed = 0.2
     if key == 87 and (action==1 or action==2) and check_boundary(cameraPos + (cameraSpeed * cameraFront)): # tecla W
@@ -700,7 +701,10 @@ def key_event(window,key,scancode,action,mods):
         
     if key == 80 and action==1 and polygonal_mode==True:
         polygonal_mode=False
+    if key == 71 and (action==1 or action==2):
+        catFlag = True
     else:
+        catFlag = False
         if key == 80 and action==1 and polygonal_mode==False:
             polygonal_mode=True
         
@@ -817,11 +821,11 @@ while not glfw.window_should_close(window):
     elif inc_x >= 15.0:
         sol_flag = True
 
-
-    if mov_flag == False:
-        incoming_z += 0.065
-    elif mov_flag == True:
-        incoming_z -= 0.065
+    if catFlag:
+        if mov_flag == False:
+            incoming_z += 0.065
+        elif mov_flag == True:
+            incoming_z -= 0.065
    
     if sol_flag == False:
         inc_x += 0.05
